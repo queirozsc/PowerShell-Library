@@ -1,4 +1,6 @@
-﻿$computador = 'SERGIO'
+﻿Import-Module .\Get-TeamViewerID.ps1 -Force
+Get-TeamViewerID -Hostname SERGIO -Copy $true
+$computador = 'SERGIO'
 
 # Informações da BIOS
 $Win32_BIOS = Get-CimInstance -ClassName Win32_BIOS -ComputerName $computador
@@ -28,28 +30,28 @@ $resultado | ConvertTo-Json
 #Listar os hotfixes instalados
 
 #Listar informações de versão do sistema operacional
-Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName CN04 | Select-Object -Property BuildNumber, BuildType, OSType, ServicePackMajorVersion, ServicePackMinorVersion
-Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName CN04 | Select-Object -Property Build*, OSType, ServicePack*
+Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $computador | Select-Object -Property BuildNumber, BuildType, OSType, ServicePackMajorVersion, ServicePackMinorVersion
+Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $computador | Select-Object -Property Build*, OSType, ServicePack*
 
 #Listar proprietário e usuários locais
-Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName CN04 | Select-Object -Property NumberOfLicensedUsers, NumberOfUsers, RegisteredUser
+Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $computador | Select-Object -Property NumberOfLicensedUsers, NumberOfUsers, RegisteredUser
 Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName CN04 | Select-Object -Property *user*
 
 #Obter o espaço em disco disponível
-Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName CN04
-Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName CN04 | Measure-Object -Property FreeSpace, Size -Sum | Select-Object -Property Property, Sum
+Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $computador
+Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $computador | Measure-Object -Property FreeSpace, Size -Sum | Select-Object -Property Property, Sum
 
 #Obter informações de sessão de logon
-Get-CimInstance -ClassName Win32_LogonSession -ComputerName CA02
+Get-CimInstance -ClassName Win32_LogonSession -ComputerName $computador
 
 #Obter o usuário conectado a um computador
-Get-CimInstance -ClassName Win32_ComputerSystem -Property UserName -ComputerName FATURAMENTO-SUP
+Get-CimInstance -ClassName Win32_ComputerSystem -Property UserName -ComputerName $computador
 
 #Obter a hora local de um computador
-Get-CimInstance -ClassName Win32_LocalTime -ComputerName CN04
+Get-CimInstance -ClassName Win32_LocalTime -ComputerName $computador
 
 #Exibir o status do serviço
-Get-CimInstance -ClassName Win32_Service -ComputerName CN04 | Format-Table -Property Status, Name, DisplayName -AutoSize -Wrap
+Get-CimInstance -ClassName Win32_Service -ComputerName $computador | Format-Table -Property Status, Name, DisplayName -AutoSize -Wrap
 Get-WmiObject -Class Win32_SystemDriver -ComputerName CN04 | Where-Object -FilterScript {$_.State -eq "Running"} | Where-Object -FilterScript {$_.StartMode -eq "Auto"} | Format-Table -Property Name, DisplayName
 Get-WmiObject -Class Win32_SystemDriver -ComputerName CN04 | Where-Object -FilterScript { ($_.State -eq 'Running') -and ($_.StartMode -eq 'Manual') } | Format-Table -Property Name, DisplayName
 
