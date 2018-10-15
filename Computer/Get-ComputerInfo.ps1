@@ -1,4 +1,4 @@
-﻿Import-Module .\Get-TeamViewerID.ps1 -Force
+﻿Import-Module Get-TeamViewerID
 Get-TeamViewerID -Hostname SERGIO -Copy $true
 $computador = 'SERGIO'
 
@@ -14,7 +14,7 @@ $hotfixes = Get-CimInstance -ClassName Win32_QuickFixEngineering -ComputerName $
     Select-Object HotFixID, Description, @{Name = 'InstalledOn'; Expression = {Get-Date ($_.InstalledOn) -Format 'dd/MM/yyyy'}} | `
     Sort-Object -Property InstalledOn
 
-$resultado = @{
+$resultado = [PSCustomObject]@{
     Computador  = $Win32_BIOS.PSComputerName ;
     Fabricante  = $Win32_BIOS.Manufacturer ;
     Modelo      = $Win32_ComputerSystem.Model ;
