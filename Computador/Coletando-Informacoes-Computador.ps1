@@ -1,41 +1,31 @@
-﻿#Executando o PowerShell como administrador
-Start-Process powershell -Verb runAs
+﻿$computador = 'SERGIO'
 
-#Status do servico Windows Remote Management
-Get-Service WinRM
+# Informações da BIOS
+$Win32_BIOS = Get-CimInstance -ClassName Win32_BIOS -ComputerName $computador
+$Win32_ComputerSystem = Get-CimInstance -ClassName Win32_ComputerSystem -ComputerName $computador
 
-#Habilitando acesso remoto no Firewall
-Enable-PSRemoting -Force
+# Informações do processador
+$Win32_Processor = Get-CimInstance -ClassName Win32_Processor -ComputerName $computador
 
-# Listando hosts confiáveis
-Get-Item WSMan:\localhost\Client\TrustedHosts
+# Hotfixes instalados
+$hotfixes = Get-CimInstance -ClassName Win32_QuickFixEngineering -ComputerName $computador | `
+    Select-Object HotFixID, Description, @{Name = 'InstalledOn'; Expression = {Get-Date ($_.InstalledOn) -Format 'dd/MM/yyyy'}} | `
+    Sort-Object -Property InstalledOn
 
-#Adicionando computador à lista de hosts confiáveis
-winrm s winrm/config/client '@{TrustedHosts="RemoteComputer"}'
-#ou
-Set-Item WSMan:\localhost\Client\TrustedHosts -value SERGIO.hobrasil
+$resultado = @{
+    Computador  = $Win32_BIOS.PSComputerName ;
+    Fabricante  = $Win32_BIOS.Manufacturer ;
+    Modelo      = $Win32_ComputerSystem.Model ;
+    Tag         = $Win32_BIOS.SerialNumber ;
+    Processador = $Win32_Processor.Name ;
+    Hotfixes    = $hotfixes
+} 
+
+$resultado | ConvertTo-Json
 
 
-#Efetuar conexão PowerShell remota (Ctrl + Shift + R)
-Enter-PSSession -ComputerName ANA -Credential sergio.queiroz
-
-#Reiniciando serviço do WinRM
-Restart-Service WinRM
-
-#Listar Configurações de Área de Trabalho
-Get-CimInstance -ClassName Win32_Desktop -ComputerName TESOURARIA03
-
-#Listando informações de BIOS
-Get-CimInstance -ClassName Win32_BIOS -ComputerName CONTABIL01
-
-#Listar informações do processador
-Get-CimInstance -ClassName Win32_Processor -ComputerName TESOURARIA03
-
-#Listar o modelo e o fabricante do computador
-Get-CimInstance -ClassName Win32_ComputerSystem -ComputerName CN04
 
 #Listar os hotfixes instalados
-Get-CimInstance -ClassName Win32_QuickFixEngineering -ComputerName TESOURARIA03
 
 #Listar informações de versão do sistema operacional
 Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName CN04 | Select-Object -Property BuildNumber, BuildType, OSType, ServicePackMajorVersion, ServicePackMinorVersion
@@ -92,3 +82,29 @@ Resolve-DnsName -Name hobrasil.com.br -Type MX
 Get-ADPrincipalGroupMembership "sergio.queiroz" | Select Name
 Get-ADGroupMember "Domain Admins" | Select Name
 Get-ADUser "sergio.queiroz" -Properties MemberOf | Select -ExpandProperty MemberOf
+
+
+#Executando o PowerShell como administrador
+Start-Process powershell -Verb runAs
+
+#Status do servico Windows Remote Management
+Get-Service WinRM
+
+#Habilitando acesso remoto no Firewall
+Enable-PSRemoting -Force
+
+# Listando hosts confiáveis
+Get-Item WSMan:\localhost\Client\TrustedHosts
+
+#Adicionando computador à lista de hosts confiáveis
+winrm s winrm/config/client '@{TrustedHosts="RemoteComputer"}'
+#ou
+Set-Item WSMan:\localhost\Client\TrustedHosts -value SERGIO.hobrasil
+
+
+#Efetuar conexão PowerShell remota (Ctrl + Shift + R)
+Enter-PSSession -ComputerName ANA -Credential sergio.queiroz
+
+#Reiniciando serviço do WinRM
+Restart-Service WinRM
+
