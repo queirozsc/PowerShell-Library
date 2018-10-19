@@ -1,6 +1,6 @@
 ﻿Import-Module Get-TeamViewerID
-Get-TeamViewerID -Hostname SERGIO -Copy $true
-$computador = 'SERGIO'
+$computador = 'ELISON'
+Get-TeamViewerID -Hostname $computador -Copy $true
 
 # Informações da BIOS
 $Win32_BIOS = Get-CimInstance -ClassName Win32_BIOS -ComputerName $computador

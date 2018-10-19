@@ -71,7 +71,7 @@ Function Set-O365UserContactInformation {
 }
 
 Connect-MsolService
-$Users = (Import-Csv -Path 'C:\Users\sergio.queiroz\Documents\OneDrive - Opty\Scripts Powershell\20180910 Senior Colaboradores.csv' -Delimiter ';') | Where { $_.DisplayName -Like '*Matheus*Morandini*' }
+$Users = (Import-Csv -Path 'C:\Users\sergio.queiroz\Documents\OneDrive - Opty\Scripts Powershell\20180910 Senior Colaboradores.csv' -Delimiter ';') | Where { $_.StreetAddress -Like '*Evaristo*Veiga*156*' }
 $Users | ForEach-Object -Begin {"Início do processamento: " + (Get-Date)} -Process { 
     $FullName = $_.DISPLAYNAME
     $Email = Convert-FullNameToEmail $_.DISPLAYNAME

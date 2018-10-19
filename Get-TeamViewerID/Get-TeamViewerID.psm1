@@ -57,4 +57,5 @@ Function Get-TeamViewerID {
 
     #Copy to clipboard
     If ($copy -and $ClientID) {$ClientID | clip}
+    return $ClientID
 }
